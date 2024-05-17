@@ -55,8 +55,18 @@ impl FileSystem {
         }
     }
 
-    fn list_files_and_directories(&self) -> Vec<&str> {
-        todo!()
+    fn list_files_and_directories(&self, path: &str) -> Vec<&str> {
+        let parts: Vec<&str> = path.split("/").collect();
+        let mut current: &HashMap<String, Node> = &self.root;
+        for part in parts[0..(parts.len() - 1)].iter() {
+            if let Some(Node::Directory(dir)) = current.get(*part) {
+                current = dir;
+            } else {
+                return vec![];
+            }
+        }
+
+        current.keys().map(|s| s.as_str()).collect::<Vec<&str>>()
     }
 
     fn rename_file(&mut self, old_path: &str, new_path: &str) {
